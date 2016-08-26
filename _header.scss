@@ -1,0 +1,451 @@
+// 
+// FROM _config.scss
+// 
+
+// *************************************
+//            HEADER / BANNER
+// *************************************
+
+// NOTE: 
+// For responsive design, I will mostly use the vmin and vmax viewport units. 
+// This is so I don't have to worry about maintaining multiple configurations
+// for portrait and landscape clients. 
+
+// Unrestricted height of banner on screen (area not covered by hotbar)
+// in fullscreen Chrome 47 on Windows 10 with a small taskbar, this equals 
+// 131px tall, which is the same size of the banner minus the overlaid srbar
+// Read: no larger than the current banner area
+$header-height: (130/955) * 100vmin;
+
+// Banner area height restrictions (balance based on your banner resolution)
+// $header-height-min: 100px;
+$header-height-min: 100px;
+$header-height-max: 300px;
+
+// Margin added below the entire header. Add to hotbar/announcebar height
+$header-margin-bottom: 15px;
+
+// Dimensions for the subreddit banner image. On-screen size will be computed
+// automatically.
+$header-banner-width: 3840px;
+$header-banner-height: 150px;
+
+// Dimensions for the size of the subreddit logo (containing element). This
+// assumes you will define a static background image for this, so define the 
+// size of that image here.
+$header-logo-bg-image-width: 600px;
+$header-logo-bg-image-height: 150px;
+
+// Dimensions for the size of the subreddit logo (clickable logo). This can be 
+// in either percentages or pixel units (for a logo that does not scale). 
+$header-logo-width: 80%;
+$header-logo-height: 90%;
+
+// *************************************
+//               HOTBAR
+// *************************************
+
+$hotbar-height: 30px;
+
+// Also used with #header-bottom-right, its immediate neighbor
+$hotbar-bg-color: rgba(16, 16, 16, 0.8);
+
+
+// *************************************
+//           ANNOUNCEMENT BAR
+// *************************************
+
+$announcebar-height: 30px;
+
+// 
+// FROM _header.scss
+// 
+
+$header-min-size: floor($header-height-min / ($header-height / 100vmin));
+$header-max-size: ceil($header-height-max / ($header-height / 100vmin));
+
+#header{
+	width: 100%;
+	height: calc(#{$header-height} + #{$hotbar-height});
+	min-height: $header-height-min + $hotbar-height;
+	max-height: $header-height-max + $hotbar-height;
+
+	border-bottom: 0;
+	
+	// Accomodate subreddit bar
+	margin-top: 20px;
+	
+	// Space for hotbar/announcebar
+	margin-bottom: ($announcebar-height + $header-margin-bottom);
+	
+	// Should work for variable size
+	// Vmin value was arrived at experimentally. 
+	background: #FACA04 url("/images/TestBanner.png") center top;
+	background-size: auto calc(100% + (4vmin - #{$hotbar-height}));
+	// background: #FACA04 url("/images/TestBanner.png") center top/auto calc(100% + (#{$header-height * ((strip-unit($hotbar-height) / ($header-height / 100vmin)) / strip-unit($header-min-size))} - #{$hotbar-height}));
+	
+	// Force GPU acceleration
+	transform: translate3d(0, 0, 0);
+}
+
+#sr-header-area {
+	position: absolute;
+	//z-index: 599;
+	
+	width: 100%;
+	height: 20px;
+	margin-top: -20px;
+	box-sizing: border-box;
+	
+	.gold {
+		
+	}
+	
+	.drop-choices {
+		z-index: 599;
+	}
+}
+
+#sr-header-area span, .sr-bar a {
+	// link color 
+	
+}
+
+#sr-more-link {
+	// configure bg/text color here
+	
+}
+
+#header-bottom-left {
+	height: 100%;
+}
+
+.pagename {
+	// Since this element is always full height in the header, we can use this to our advantage.
+	// Scale the element to the current height of the header (min/max height accounted for), scaled
+	// to how wide the element should be.
+	width: ($header-logo-bg-image-width / $header-logo-bg-image-height) * $header-height;
+	height: 100%;
+	
+	min-width: ($header-height-min / $header-logo-bg-image-height) * $header-logo-bg-image-width;
+	max-width: ($header-height-max / $header-logo-bg-image-height) * $header-logo-bg-image-width;
+	
+	position: absolute;
+	left: 50%;
+	margin: 0;
+	
+	// Margin is equal to half the current computed length of the .pagename element.
+	// Will not scale properly when display is longer or shorter than the min/max length; use
+	// media queries to cap the limits of the scaling.
+	margin-left: ($header-logo-bg-image-width / ($header-logo-bg-image-height * -2)) * $header-height;
+	
+	background-color: #FACA04;
+	
+	color: transparent;
+	
+	a{
+		position: absolute;
+		width: $header-logo-width;
+		height: $header-logo-height;
+		
+		@if unit($header-logo-width) == "px" {
+			left: 50%;
+			margin-left: #{$header-logo-width / -2};
+		} @else if unit($header-logo-width) == "%" {
+			left: (100% - $header-logo-width) / 2;
+		}
+		
+		@if unit($header-logo-height) == "px" {
+			top: 50%;
+			margin-top: #{$header-logo-height / -2};
+		} @else if unit($header-logo-height) == "%" {
+			top: (100% - $header-logo-height) / 2;
+		}
+		
+		// Set background image here.
+		background: linear-gradient(135deg, #cedbe9 0%,#aac5de 17%,#6199c7 50%,#3a84c3 51%,#419ad6 59%,#4bb8f0 71%,#3a8bc2 84%,#26558b 100%);
+		font-size: 0;
+		color: transparent;
+	}
+	
+	// Problem is, when the screen grows too narrow, the element will begin pushing
+	// the right boundary of the screen, resulting in a dreaded scrollbar. To 
+	// address this without scaling any further, we hit the breakpoint defined by
+	// the minimum size of the element, set the size to 100% (remember: height 
+	// isn't changing), then shift the background image so it'll slide off the 
+	// element gracefully.
+	//
+	// We don't want to set any overflow on #header, as other aspects of the 
+	// stylesheet aren't designed to work with no overflow.
+	
+	$min-size-logo: floor(($header-height-min / $header-logo-bg-image-height) * $header-logo-bg-image-width + 17);
+	@media (max-width: $min-size-logo) and (orientation: landscape), (max-width: $min-size-logo) and (orientation: portrait){
+		left: 0;
+		margin-left: 0;
+		width: 100%;
+		min-width: initial;
+	}
+}
+
+#header .tabmenu {
+	position: absolute;
+	top: calc(#{$header-height} + #{$hotbar-height + $announcebar-height + $header-margin-bottom});
+	left: 15px;
+	
+	margin: 0;
+	
+	border: 1px solid #000;
+	
+	li {
+		margin: 0;
+		
+		a {
+			&, &.selected {
+				padding: 0;
+				background: 0;
+				border: 0;
+			}
+		}
+	}
+}
+
+// Fix header positions at a certain point
+@media(max-height: $header-min-size) and (orientation: landscape), (max-width: $header-min-size) and (orientation: portrait){
+	.pagename {
+		// Half the width of it at its smallest
+		margin-left: ($header-height-min / $header-logo-bg-image-height) * ($header-logo-bg-image-width / -2);
+	}
+	
+	#header {
+		// Known working for minimum size 
+		background-size: auto 100%;
+	}
+	
+	#header .tabmenu {
+		top: $header-height-min + $hotbar-height + $announcebar-height + $header-margin-bottom;
+	}
+}
+
+@media(min-height: $header-max-size) and (orientation: landscape), (min-width: $header-max-size) and (orientation: portrait){
+	.pagename {
+		// Half the width of it at its largest
+		margin-left: ($header-height-max / $header-logo-bg-image-height) * ($header-logo-bg-image-width / -2);
+	}
+	
+	#header {
+		// Known working for maximum size 
+		background-size: auto #{$header-height-max + $hotbar-height + ($hotbar-height * (($header-height-max / $header-height-min) - 1))};
+	}
+	
+	#header .tabmenu {
+		top: $header-height-max + $hotbar-height + $announcebar-height + $header-margin-bottom;
+	}
+}
+
+#header-img-a {
+	display: none;
+}
+
+#header-bottom-right {
+	width: 25%;
+	height: $hotbar-height;
+	
+	padding: 0;
+	
+	line-height: $hotbar-height;
+	
+	overflow-y: scroll;
+	
+	background: $hotbar-bg-color;
+	
+	border-radius: 0;
+	
+	.separator {
+		display: none;
+	}
+}
+
+body > .content {
+	margin-top: 30px; 
+	border: 1px solid #000;
+}
+
+// 
+// FROM _sidebar.scss
+// 
+
+.side {
+	// Override my previously very specific selectors in layout.scss
+	.titlebox .usertext-body .md > h1 + blockquote,
+	.titlebox .usertext-body .md > h4 + blockquote {
+		position: absolute;
+		
+		left: 0;
+		
+		margin: 0;
+		padding: 0;
+		
+		border: 0;
+	}
+	
+	.titlebox .usertext-body .md > h4 + blockquote {
+		box-sizing: border-box;
+		border-left: 4px solid #FF0000;
+	}
+	
+	// Hotbar
+	.md h1 + blockquote {
+		top: -1 * ($header-margin-bottom + $hotbar-height + $announcebar-height);
+		
+		width: 75%;
+		height: $hotbar-height;
+		float: left;
+		
+		z-index: 2000;
+		
+		a {
+			min-height: $hotbar-height;
+			width: 100%;
+			
+			display: flex;
+			justify-content:center;
+			flex-direction:column;
+			
+			color: #faca04;
+			font: {
+				family: "Segoe UI";
+				size: 13px;
+			}
+
+			&:hover {
+				color: #101010;
+				background: #faca04;
+			}
+			
+			&:before {
+				position: absolute;
+				left: 0px;
+			}
+			
+			&:after {
+				position: absolute; 
+				right: 3px;
+			}
+		}
+		
+		& > ul {
+			display: flex;
+			
+			width: 100%;
+			
+			list-style: none;
+			
+			padding: 0;
+			margin: 0;
+			
+			& > li {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				
+				height: $hotbar-height;
+				
+				position: relative;
+				
+				text-align: center;
+				
+				background: $hotbar-bg-color;
+				
+				&:hover { 
+					background: rgba(16, 16, 16, 0.95);
+				}
+				
+				& > a {
+					font-weight: bold;
+				}
+				
+				// Down arrow only if link is not the last child element 
+				& > a:not(:only-child):after {
+					content: " ▾";
+				}
+				
+				// Up arrow when li is hovered over and link is not last child
+				&:hover > a:not(:only-child):after {
+					content: " ▴";
+				}
+				
+				
+				ul {
+					display: block;
+					
+					position: absolute;
+					top: $hotbar-height;
+					left: 0;
+					
+					width: 100%;
+					
+					margin: 0;
+					padding: 0;
+					
+					list-style: none;
+					
+					// Since this is a dropdown, we don't want it to appear when not hovered over 
+					height: 0; 
+					overflow: hidden;
+				}
+				
+				&:hover ul{
+					height: initial;
+					overflow: visible;
+
+					border-bottom: 3px solid #faca04;
+				}
+				
+				ul li {
+					min-height: $hotbar-height;
+
+					background: rgba(16, 16, 16, 0.95);
+				}
+			}
+		}
+	}
+	
+	// For the sake of testing, collapse entire thing as if it was mobile
+	.titlebox .usertext-body .md > h1 {
+		position: absolute;
+		
+		top: -1 * ($header-margin-bottom + $hotbar-height + $announcebar-height);
+		
+		width: 25%;
+		height: $hotbar-height;
+		right: 0;
+		
+		margin: 0;
+		
+		content: " ";
+		
+		&:hover + blockquote {
+			width: 100px;
+		}
+	}
+	
+	// Announcebar
+	.md h4 + blockquote {
+		top: -1 * ($header-margin-bottom + $announcebar-height);
+		
+		width: 100%;
+		height: $announcebar-height;
+		
+		background: #EEE;
+		
+		overflow-y: scroll;
+		
+		p {
+			margin: 0 4px;
+			
+			line-height: $announcebar-height;
+		}
+		
+		//z-index: 0;
+	}
+}
