@@ -1,0 +1,133 @@
+@import "https://www.redditstatic.com/reddit.lq1acw0F9zY.css";
+
+@import "functions.scss";
+
+// for my test environment
+#viewportSizing {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	visibility: hidden;
+	z-index: -100;
+}
+
+@import "layout";
+
+@import "header";
+
+/* stupid RES stuff, integrate later */
+
+// sticky header fix
+.pinHeader-sub #header-bottom-left {
+    margin-top: 0;
+}
+
+// random padding pushing srbar down
+#jumpToContent + div:not(#sr-header-area):not(#header-bottom-left):not(#header-bottom-right) {
+    display: none;
+}
+
+// re-repositioning user bar
+.res #header-bottom-right {
+    top: initial;
+    bottom: 0;
+    border-radius: 0;
+}
+
+// sub buttons and subscriber stats
+// fuck this section in particular
+.res div[data-res-css*="display"], .res .subButtons {
+    padding-left: calc(100% - 300px);
+    padding-right: 10px;
+}
+
+/*
+// for eegras
+
+*:nth-child(5n + 0) {
+	animation-name: flashing1;
+	animation-duration: 1s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+}
+*:nth-child(5n + 1) {
+	animation-name: flashing2;
+	animation-duration: 3s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+}
+*:nth-child(5n + 2) {
+	animation-name: flashing3;
+	animation-duration: 2s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+}
+*:nth-child(5n + 3) {
+	animation-name: flashing4;
+	animation-duration: 0.25s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+}
+*:nth-child(5n + 4) {
+	animation-name: flashing5;
+	animation-duration: 0.5s;
+	animation-direction: alternate;
+	animation-iteration-count: infinite;
+}
+
+@keyframes flashing1 {
+	from {
+		background: inherit;
+		color: inherit;
+	}
+	to {
+		background: #FF0000;
+		color: #00FF00
+	}
+}
+
+@keyframes flashing2 {
+	from {
+		background: inherit;
+		color: inherit;
+	}
+	to {
+		background: #00FF00;
+		color: #101010
+	}
+}
+
+@keyframes flashing3 {
+	from {
+		background: inherit;
+		color: inherit;
+	}
+	to {
+		background: #0000FF;
+		color: #00FF00
+	}
+}
+
+@keyframes flashing4 {
+	from {
+		background: inherit;
+		color: inherit;
+	}
+	to {
+		background: #FACA04;
+		color: #0000FF
+	}
+}
+
+@keyframes flashing5 {
+	from {
+		background: inherit;
+		color: inherit;
+	}
+	to {
+		background: #101010;
+		color: #FACA04
+	}
+}*/
