@@ -1,0 +1,80 @@
+// To help address the issue of scrollbars and using vw/vh on iOS 7 devices, this sets the 
+// sidebar to 100% width and then sets a 100% - 300px padding on every element except for 
+// the stuff going in the header.
+// 
+// I can already tell this will be much more complicated than it needs to be.
+
+
+.side {
+    width: 100%;
+    
+    position: absolute;
+    
+    margin: 0;
+    
+    background: none;
+    
+	/*     
+    & > *:not(:nth-of-type(4)) {
+        padding-left: calc(100% - 300px);
+        padding-right: 10px;
+    }
+    
+    // did someone order selector soup?
+    & > .spacer:nth-of-type(4) > .titlebox > *:not(.usertext) {
+        margin-left: calc(100% - 300px);
+        margin-right: 10px;
+        background: none;
+    }
+    
+    // DRY? what's DRY?
+    & > .spacer:nth-of-type(4) > .titlebox > .usertext > .usertext-body > .md > * {
+        margin-left: calc(100% - 300px);
+        margin-right: 10px;
+    } */
+	
+	& > * > *:not(.titlebox) {
+		padding-left: calc(100% - 300px);
+        padding-right: 10px;
+	}
+    
+	.titlebox > *:not(.usertext) {
+		margin-left: calc(100% - 300px);
+        margin-right: 10px;
+        background: none;
+	}
+	
+	.titlebox .usertext-body .md > * {
+		margin-left: calc(100% - 300px);
+        margin-right: 10px;
+	}
+	
+	.linkinfo {
+		margin-left: calc(100% - 300px);
+        margin-right: 10px;
+		padding: 0;
+	}
+	
+    .md {
+        max-width: none;
+		z-index: 10;
+    }
+    
+    //z-index: 0;
+	
+	// Hack to eliminate vertical scrollbars on Internet Explorer 11 when flairs are longer
+	// than the box is wide
+	.sidecontentbox {
+		overflow: hidden;
+	}
+}
+
+// Speculative fix to deal with 
+// AUG 2016 EDIT: I forget what this was supposed to deal with. 
+
+body > .content {
+    width: calc(100% - 320px);
+    
+    position: relative;
+    //z-index: 0;
+}
